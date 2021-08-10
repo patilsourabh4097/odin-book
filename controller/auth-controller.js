@@ -2,13 +2,13 @@ const bcrypt = require("bcryptjs");
 const express = require("express");
 const jwt = require("jsonwebtoken");
 
-const User = require("../model/user");
+const User = require("../model/users");
 
 exports.signup = async (req, res) => {
   const { firstname, lastname, username, password } = req.body;
   const user = await User.findOne({ username: username });
   if (user) {
-    res.json({
+    res.status(400).json({
       err: "User already exists",
     });
     return;
@@ -25,13 +25,13 @@ exports.signup = async (req, res) => {
 
   await newUser.save((err) => {
     if (err) {
-      res.json({
+      res.status(400).json({
         err,
       });
       return;
     }
   });
-  res.json({
+  res.status(200).json({
     success: "successfully signed up",
   });
 };
@@ -44,7 +44,7 @@ exports.login = async (req, res) => {
   const user = await User.findOne({ username: username });
 
   if (!user) {
-    res.json({ msg: "user doesnt exists" });
+    res.status(400).json({ msg: "user doesnt exists" });
     return;
   }
 
@@ -55,12 +55,12 @@ exports.login = async (req, res) => {
       password: user.password,
     };
     const token = await jwt.sign(credentials, key);
-    res.json({
+    res.status(200).json({
       msg: "login successfull",
       token,
     });
   } else {
-    res.json({
+    res.status(400).json({
       msg: "wrong password",
     });
   }
@@ -68,7 +68,7 @@ exports.login = async (req, res) => {
 
 exports.authUser = (req, res, next) => {
   if (!req.headers.auth) {
-    res.json({ msg: "user is not logged in to do this activity" });
+    res.status(400).json({ msg: "user is not logged in to do this activity" });
     return;
   }
   let token = req.headers.auth;
@@ -76,13 +76,13 @@ exports.authUser = (req, res, next) => {
 
   jwt.verify(token, process.env.SECRETKEY, async (err, userObj) => {
     if (err) {
-      res.json({ msg: "Invalid token" });
+      res.status(400).json({ msg: "Invalid token" });
       return;
     }
 
     let user = await User.findOne({ username: userObj.name });
     if (!user) {
-      res.json({ msg: "user doesnt exists" });
+      res.status(400).json({ msg: "user doesnt exists" });
       return;
     }
     req.user = user;

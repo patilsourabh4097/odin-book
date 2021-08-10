@@ -11,10 +11,12 @@ const postsRoute = require("./routes/posts-route");
 const usersRoute = require("./routes/users-route");
 
 const app = express();
-dotEnv.config();
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+dotEnv.config();
 
 const MONGODB = process.env.MONGODB;
 mongoose.connect(MONGODB, {
@@ -24,7 +26,7 @@ mongoose.connect(MONGODB, {
 });
 
 app.use("/auth", authRoute);
-app.use("/frdrequests", frdRequestsRoute);
+app.use("/frd-requests", frdRequestsRoute);
 app.use("/posts", commentsRoute);
 app.use("/posts", postsRoute);
 app.use("/users", usersRoute);
@@ -36,5 +38,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Listning on ${PORT}`);
+  console.log(`Listening on ${PORT}`);
 });

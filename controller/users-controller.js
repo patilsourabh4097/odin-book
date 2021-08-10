@@ -2,19 +2,19 @@ const bcrypt = require("bcryptjs");
 const express = require("express");
 
 const FrdRequest = require("../model/frd-requests");
-const User = require("../model/user");
+const User = require("../model/users");
 const Posts = require("../model/posts");
 
 exports.allUsers = async (req, res) => {
   users = await User.find().populate("friends");
   if (users.length === 0) {
-    res.json({
+    res.status(400).json({
       msg: "no users found",
     });
     return;
   }
-  res.json({
-    users: users,
+  res.status(200).json({
+    users
   });
 };
 
@@ -22,12 +22,12 @@ exports.getUserById = async (req, res) => {
   const { userId } = req.params;
   const user = await User.findById(userId);
   if (!user) {
-    res.json({
+    res.status(400).json({
       msg: "No user found",
     });
     return;
   }
-  res.json({
+  res.status(200).json({
     username: user.username,
     firstname: user.firstname,
     lastname: user.lastname,
@@ -39,12 +39,12 @@ exports.postsByUser = async (req, res) => {
 
   const posts = await Posts.find({ postBy: userId });
   if (posts.length === 0) {
-    res.json({
+    res.status(400).json({
       msg: "no posts by this user",
     });
     return;
   }
-  res.json({
+  res.status(200).json({
     posts,
   });
 };
@@ -57,16 +57,16 @@ exports.getFrdRequests = async (req, res) => {
     res.status(400).json({ msg: "No such user exists" });
   }
 
-  const allRequests = await FrdRequest.find({ requestTo: userId }).populate(
+  const requests = await FrdRequest.find({ requestTo: userId }).populate(
     "requestBy"
   );
-  if (allRequests.length === 0) {
-    res.json({ msg: "no requests found" });
+  if (requests.length === 0) {
+    res.status(400).json({ msg: "no requests found" });
     return;
   }
-  res.json({
+  res.status(200).json({
     success: "Success",
-    allRequests,
+    requests,
   });
 };
 
@@ -100,7 +100,7 @@ exports.acceptRequest = async (req, res) => {
   user.friends.push(currUser._id);
   let savedOne = await currUser.save();
   let savedTwo = await user.save();
-  res.json({ msg: "accepted request" });
+  res.status(200).json({ msg: "accepted request" });
 };
 
 exports.unfriend = async (req, res) => {
@@ -127,7 +127,7 @@ exports.unfriend = async (req, res) => {
     { friends: unfriendTo.friends }
   );
 
-  res.json({ success: "unfriend done" });
+  res.status(200).json({ success: "unfriend done" });
 };
 
 exports.changePassword = async (req, res) => {
@@ -141,7 +141,7 @@ exports.changePassword = async (req, res) => {
     { _id: userId },
     { password: hashedPassword }
   );
-  res.json({
+  res.status(200).json({
     success: "password updated ",
   });
 };

@@ -1,15 +1,15 @@
 const express = require("express");
 
 const FrdRequest = require("../model/frd-requests");
-const User = require("../model/user");
+const User = require("../model/users");
 
 exports.getAllRequests = async (req, res) => {
-  const allReq = await FrdRequest.find();
-  if (allReq.length === 0) {
+  const requests = await FrdRequest.find();
+  if (requests.length === 0) {
     res.json({ msg: "no requests found" });
     return;
   }
-  res.json({ msg: allReq });
+  res.status(200).json({ msg: requests });
 };
 
 exports.getRequestById = async (req, res) => {
@@ -20,7 +20,7 @@ exports.getRequestById = async (req, res) => {
     res.status(400).json({ msg: "no such request found" });
     return;
   }
-  res.json({ msg: "success", request });
+  res.status(200).json({ msg: "success", request });
 };
 
 exports.addRequest = async (req, res) => {
@@ -44,10 +44,10 @@ exports.addRequest = async (req, res) => {
       requestBy,
       requestTo,
     });
-    const savedReq = await newRequest.save();
-    res.json({
+    newRequest = await newRequest.save();
+    res.status(200).json({
       msg: "requested successfully",
-      savedReq,
+      newRequest,
     });
   } catch (err) {
     res.status(400).json({ msg: "error while sending request" });
@@ -64,7 +64,7 @@ exports.deleteRequest = async (req, res) => {
   }
   try {
     deleted = await FrdRequest.deleteOne({ _id: requestId });
-    res.json({ delete: requestId });
+    res.status(200).json({ delete: requestId });
   } catch (err) {
     res.status(500).json({ msg: "error while deleting req" });
   }
