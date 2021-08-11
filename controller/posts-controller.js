@@ -50,7 +50,7 @@ exports.getSinglePost = async (req, res) => {
 
 exports.updatePost = async (req, res) => {
   const { postId } = req.params;
-  const content = req.body.changes;
+  const content = req.body.update;
   if (content === "") {
     res.status(400).json({ msg: "content must not be empty" });
     return;
@@ -70,7 +70,7 @@ exports.updatePost = async (req, res) => {
 
 exports.likePost = async (req, res) => {
   const { postId } = req.params;
-  const { userId } = req.body;
+  const userId = req.user._id;
 
   const post = await Posts.findById(postId);
   if (post.likes.indexOf(userId) !== -1) {
@@ -90,7 +90,7 @@ exports.likePost = async (req, res) => {
 
 exports.dislikePost = async (req, res) => {
   const { postId } = req.params;
-  const { userId } = req.body;
+  const userId = req.user._id;
   const post = await Posts.findById(postId);
   if (post.likes.indexOf(userId) === -1) {
     res.status(400).json({
@@ -113,7 +113,9 @@ exports.deletePost = async (req, res) => {
   try {
     const post = await Posts.findById(postId);
   } catch (err) {
-    res.status(400).json({ msg: "the post you want to delete does not exists" });
+    res
+      .status(400)
+      .json({ msg: "the post you want to delete does not exists" });
   }
   const deleted = await Posts.deleteOne({ _id: postId });
   res.status(200).json({

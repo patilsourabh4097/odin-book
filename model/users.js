@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 let User = new mongoose.Schema({
-  firstname: String,
-  lastname: String,
-  username: String,
+  firstName: String,
+  lastName: String,
+  userName: String,
   password: String,
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });

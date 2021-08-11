@@ -14,7 +14,7 @@ exports.allUsers = async (req, res) => {
     return;
   }
   res.status(200).json({
-    users
+    users,
   });
 };
 
@@ -27,10 +27,13 @@ exports.getUserById = async (req, res) => {
     });
     return;
   }
+  const userName = user.userName;
+  const firstname = user.firstName;
+  const lastname = user.lastName;
   res.status(200).json({
-    username: user.username,
-    firstname: user.firstname,
-    lastname: user.lastname,
+    userName,
+    firstName,
+    lastName,
   });
 };
 
@@ -71,10 +74,10 @@ exports.getFrdRequests = async (req, res) => {
 };
 
 exports.acceptRequest = async (req, res) => {
-  const userToAdd = req.body.user;
+  const userToAdd = req.body.request;
   const { userId } = req.params;
 
-  const user = await User.findById(userToAdd);
+  let user = await User.findById(userToAdd);
 
   if (!user) {
     res.status(400).json({ msg: "no such user to add" });
@@ -98,8 +101,8 @@ exports.acceptRequest = async (req, res) => {
   }
   currUser.friends.push(user._id);
   user.friends.push(currUser._id);
-  let savedOne = await currUser.save();
-  let savedTwo = await user.save();
+  currUser = await currUser.save();
+  user = await user.save();
   res.status(200).json({ msg: "accepted request" });
 };
 
@@ -107,8 +110,8 @@ exports.unfriend = async (req, res) => {
   const { unfriendId } = req.body;
   const { userId } = req.params;
 
-  const currUser = await User.findById(userId);
-  const unfriendTo = await User.findById(unfriendId);
+  let currUser = await User.findById(userId);
+  let unfriendTo = await User.findById(unfriendId);
 
   currUser.friends = [...currUser.friends].filter(
     (friend) => friend.toString() !== unfriendId
