@@ -8,7 +8,7 @@ exports.signup = async (req, res) => {
   const { firstName, lastName, userName, password } = req.body;
   const user = await User.findOne({ userName: userName });
   if (user) {
-    res.status(400).json({
+    res.status(409).json({
       err: "User already exists",
     });
     return;
@@ -43,7 +43,7 @@ exports.login = async (req, res) => {
   const user = await User.findOne({ userName: userName });
 
   if (!user) {
-    res.status(400).json({ msg: "user doesnt exists" });
+    res.status(404).json({ msg: "user doesnt exists" });
     return;
   }
 
@@ -59,33 +59,8 @@ exports.login = async (req, res) => {
       token,
     });
   } else {
-    res.status(400).json({
+    res.status(403).json({
       msg: "wrong password",
     });
   }
-};
-
-exports.authUser = (req, res, next) => {
-  let token = req.headers.auth;
-  if (!token) {
-    res.status(400).json({ msg: "user is not logged in to do this activity" });
-    return;
-  }
-
-  token = token.split(" ")[1];
-
-  jwt.verify(token, process.env.SECRETKEY, async (err, userObj) => {
-    if (err) {
-      res.status(400).json({ msg: "Invalid token" });
-      return;
-    }
-
-    let user = await User.findOne({ userName: userObj.name });
-    if (!user) {
-      res.status(400).json({ msg: "user doesnt exists" });
-      return;
-    }
-    req.user = user;
-    next();
-  });
 };

@@ -9,7 +9,7 @@ exports.getAllComments = async (req, res) => {
   try {
     post = await Posts.findById(postId);
   } catch (err) {
-    res.status(400).json({ msg: "the post you are commenting on does not exists" });
+    res.status(404).json({ msg: "the post you are commenting on does not exists" });
   }
   const comments = await Comments.find({ onPost: postId });
   res.status(200).json({
@@ -27,7 +27,7 @@ exports.addComment = async (req, res) => {
   try {
     const post = await Posts.findById(postId);
   } catch (err) {
-    res.status(400).json({ msg: "there is no such post to comment on" });
+    res.status(404).json({ msg: "there is no such post to comment on" });
   }
   const newComment = new Comments({
     comment: content,
@@ -57,12 +57,12 @@ exports.deleteComment = async (req, res) => {
   try {
     const comment = await Comments.findById(commentId);
   } catch (err) {
-    res.status(400).json({ msg: "no comment found with this id" });
+    res.status(404).json({ msg: "no comment found with this id" });
   }
   try {
     const deleteResult = await Comments.deleteOne({ _id: commentId });
   } catch (err) {
-    res.status(400).json({ msg: "error while deleting comment" });
+    res.status(405).json({ msg: "error while deleting comment" });
     return;
   }
   res.status(200).json({

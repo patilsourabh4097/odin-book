@@ -2,7 +2,7 @@ const router = require("express").Router();
 
 const schema = require("../express-validator-schema/validator-schema");
 const validator = require("../middleware/express-validator");
-const auth = require("../controller/auth-controller");
+const auth = require("../validators/validate-user");
 const posts = require("../controller/posts-controller");
 
 router.get("/", posts.allPosts);

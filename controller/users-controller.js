@@ -8,7 +8,7 @@ const Posts = require("../model/posts");
 exports.allUsers = async (req, res) => {
   users = await User.find().populate("friends");
   if (users.length === 0) {
-    res.status(400).json({
+    res.status(404).json({
       msg: "no users found",
     });
     return;
@@ -22,7 +22,7 @@ exports.getUserById = async (req, res) => {
   const { userId } = req.params;
   const user = await User.findById(userId);
   if (!user) {
-    res.status(400).json({
+    res.status(404).json({
       msg: "No user found",
     });
     return;
@@ -42,7 +42,7 @@ exports.postsByUser = async (req, res) => {
 
   const posts = await Posts.find({ postBy: userId });
   if (posts.length === 0) {
-    res.status(400).json({
+    res.status(404).json({
       msg: "no posts by this user",
     });
     return;
@@ -57,14 +57,14 @@ exports.getFrdRequests = async (req, res) => {
   try {
     const user = await User.findById(userId);
   } catch (err) {
-    res.status(400).json({ msg: "No such user exists" });
+    res.status(404).json({ msg: "No such user exists" });
   }
 
   const requests = await FrdRequest.find({ requestTo: userId }).populate(
     "requestBy"
   );
   if (requests.length === 0) {
-    res.status(400).json({ msg: "no requests found" });
+    res.status(404).json({ msg: "no requests found" });
     return;
   }
   res.status(200).json({
@@ -80,7 +80,7 @@ exports.acceptRequest = async (req, res) => {
   let user = await User.findById(userToAdd);
 
   if (!user) {
-    res.status(400).json({ msg: "no such user to add" });
+    res.status(404).json({ msg: "no such user to add" });
     return;
   }
 

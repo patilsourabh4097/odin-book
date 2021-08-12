@@ -6,7 +6,7 @@ const User = require("../model/users");
 exports.getAllRequests = async (req, res) => {
   const requests = await FrdRequest.find();
   if (requests.length === 0) {
-    res.json({ msg: "no requests found" });
+    res.status(404).json({ msg: "no requests found" });
     return;
   }
   res.status(200).json({ msg: requests });
@@ -17,7 +17,7 @@ exports.getRequestById = async (req, res) => {
   try {
     request = await FrdRequest.findById(requestId);
   } catch (err) {
-    res.status(400).json({ msg: "no such request found" });
+    res.status(404).json({ msg: "no such request found" });
     return;
   }
   res.status(200).json({ msg: "success", request });
@@ -36,7 +36,7 @@ exports.addRequest = async (req, res) => {
     const sendBy = await User.findById(requestBy);
     const rcvdBy = await User.findById(requestTo);
   } catch (err) {
-    res.status(400).json({ msg: "either sender or rcver doesnt exists" });
+    res.status(404).json({ msg: "either sender or rcver doesnt exists" });
     return;
   }
   try {
@@ -50,7 +50,7 @@ exports.addRequest = async (req, res) => {
       newRequest,
     });
   } catch (err) {
-    res.status(400).json({ msg: "error while sending request" });
+    res.status(405).json({ msg: "error while sending request" });
     return;
   }
 };
@@ -60,7 +60,7 @@ exports.deleteRequest = async (req, res) => {
   try {
     const request = await FrdRequest.findById(requestId);
   } catch (err) {
-    res.status(400).json({ msg: "no such request found" });
+    res.status(404).json({ msg: "no such request found" });
   }
   try {
     deleted = await FrdRequest.deleteOne({ _id: requestId });

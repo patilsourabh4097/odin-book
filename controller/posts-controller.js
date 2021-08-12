@@ -6,7 +6,7 @@ const User = require("../model/users");
 exports.allPosts = async (req, res) => {
   const posts = await Posts.find();
   if (posts.length === 0) {
-    res.status(400).json({
+    res.status(404).json({
       msg: "no posts found",
     });
     return;
@@ -40,7 +40,7 @@ exports.getSinglePost = async (req, res) => {
   try {
     const post = await Posts.findById(postId).populate("postBy");
   } catch (err) {
-    res.status(400).json({ msg: "No post with this id found" });
+    res.status(404).json({ msg: "No post with this id found" });
     return;
   }
   res.status(200).json({
@@ -58,7 +58,7 @@ exports.updatePost = async (req, res) => {
   try {
     const post = await Posts.findById(postId);
   } catch (err) {
-    res.status(400).json({ msg: "the post you want to update is not found" });
+    res.status(404).json({ msg: "the post you want to update is not found" });
     return;
   }
   updatedPost = await Posts.updateOne({ _id: postId }, { post: content });
@@ -114,7 +114,7 @@ exports.deletePost = async (req, res) => {
     const post = await Posts.findById(postId);
   } catch (err) {
     res
-      .status(400)
+      .status(404)
       .json({ msg: "the post you want to delete does not exists" });
   }
   const deleted = await Posts.deleteOne({ _id: postId });
